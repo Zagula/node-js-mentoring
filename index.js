@@ -1,9 +1,9 @@
 'use strict';
 
 const config = require("./config/configs.json");
-const models = require("./models");
+const modules = require("./modules");
 
 console.log(config.name);
 
-new models.User();
-new models.Product();
+new modules.User();
+new modules.Product();
