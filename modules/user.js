@@ -1,9 +1,7 @@
 'use strict';
 
-class User {
+export class User {
     constructor() {
-        console.log("User module");
+        console.log('User module');
     }
 }
-
-module.exports = User;

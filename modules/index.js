@@ -1,4 +1,4 @@
 'use strict';
 
-exports.User = require("./user.js");
-exports.Product = require("./product.js");
+export * from './user';
+export * from './product';

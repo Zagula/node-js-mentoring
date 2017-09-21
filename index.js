@@ -1,9 +1,9 @@
 'use strict';
 
-const config = require("./config/configs.json");
-const modules = require("./modules");
+import * as config from './config/configs';
+import { User, Product } from './modules';
 
 console.log(config.name);
 
-new modules.User();
-new modules.Product();
+const user = new User();
+const product = new Product();
