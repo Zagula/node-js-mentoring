@@ -1,3 +1,6 @@
 {
-    "name": "NodeMP HW App"
+    "name": "NodeMP HW App",
+    "dirWatcher": {
+        "delay": 4000
+    }
 }
