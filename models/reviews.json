@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "productId": 1,
+        "userId": 1,
+        "review": "The best t-shirt ever )"
+    },
+    {
+        "id": 2,
+        "productId": 1,
+        "userId": 3,
+        "review": "My first purchase, i'm so exciting!"
+    },
+    {
+        "id": 3,
+        "productId": 3,
+        "userId": 3,
+        "review": "Too expensive, but really nice ))))"
+    },
+    {
+        "id": 4,
+        "productId": 4,
+        "userId": 4,
+        "review": "good"
+    }
+]
