@@ -4,11 +4,17 @@
   "description": "Empty",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node hw3.js",
+    "start": "babel-node index.js",
     "hw1": "babel-node hw1.js",
     "hw2": "babel-node hw2.js",
     "hw3": "babel-node hw3.js",
-    "streams":  "babel-node ./utils/streams.js",
+    "streams": "babel-node ./utils/streams.js",
+    "hw4-plain": "babel-node ./http-servers/plain-text-server.js",
+    "hw4-html": "babel-node ./http-servers/html-server.js",
+    "hw4-json": "babel-node ./http-servers/json-server.js",
+    "hw4-echo": "babel-node ./http-servers/echo-server.js",
+    "hw4": "babel-node index.js",
+
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -26,10 +32,12 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-register": "^6.26.0",
+    "express": "^4.16.2",
     "minimist": "^1.2.0",
     "nodemon": "^1.12.1",
     "request": "^2.83.0",
     "split": "^1.0.1",
+    "stream-replace": "^1.0.0",
     "through2": "^2.0.3"
   }
 }
