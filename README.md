@@ -21,7 +21,14 @@ npm run hw4-html -- --sync
 npm run hw4-html
 npm run hw4-json
 npm run hw4-echo
-npm run hw4 or npm start
+npm run hw4
 ```
+#### 5. Authorization/Validation/Security (current)*
+```
+npm run hw5
+```
+`Credentials for local authentication:`
+**login:** dude
+**password:** qwerty1234
 
 *\***current** hometask can also be executing by `npm start`*
