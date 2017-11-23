@@ -23,12 +23,22 @@ npm run hw4-json
 npm run hw4-echo
 npm run hw4
 ```
-#### 5. Authorization/Validation/Security (current)*
+#### 5. Authorization/Validation/Security
 ```
 npm run hw5
 ```
 `Credentials for local authentication:`
 **login:** dude
 **password:** qwerty1234
+#### 6. SQL/ORM *NOT DONE*
+```
+...
+```
+#### 7. NoSQL/ODM (current)*
+```
+npm run hw7-city
+npm run hw7-city -- --mongo
+npm run hw7-genData
+```
 
 *\***current** hometask can also be executing by `npm start`*
