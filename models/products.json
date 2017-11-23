@@ -4,55 +4,39 @@
         "name": "Supreme T-Shirt",
         "brand": "Supreme",
         "price": 99.99,
-        "options": [
-            {
-                "color": "blue"
-            },
-            {
-                "size": "XL"
-            }
-        ]
+        "options": {
+            "color": "blue",
+            "size": "XL"
+        }
     },
     {
         "id": 2,
         "name": "Common T-Shirt",
         "brand": "Noname",
         "price": 19.99,
-        "options": [
-            {
-                "color": "gray"
-            },
-            {
-                "size": "L"
-            }
-        ]
+        "options": {
+            "color": "gray",
+            "size": "L"
+        }
     },
     {
         "id": 3,
         "name": "Supreme Jeans",
         "brand": "Supreme",
         "price": 149.99,
-        "options": [
-            {
-                "color": "lightblue"
-            },
-            {
-                "size": "38"
-            }
-        ]
+        "options": {
+            "color": "lightblue",
+            "size": "38"
+        }
     },
     {
         "id": 4,
         "name": "Common Jeans",
         "brand": "Xuan Dong",
         "price": 49.99,
-        "options": [
-            {
-                "color": "blue"
-            },
-            {
-                "size": "38"
-            }
-        ]
+        "options": {
+            "color": "blue",
+            "size": "38"
+        }
     }
 ]

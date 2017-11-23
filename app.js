@@ -10,6 +10,7 @@ import LocalStrategy from 'passport-local';
 import FacebookStrategy from 'passport-facebook';
 //import TwitterStrategy from 'passport-twitter';
 //import GoogleStrategy from 'passport-google-oauth';
+import mongoose from './modules/mongoDBService';
 
 import parsedCookies from './middlewares/parsedCookies';
 import parsedQuery from './middlewares/parsedQuery';
@@ -18,6 +19,11 @@ import checkToken from './middlewares/checkToken';
 import products from './models/products';
 import users from './models/users';
 import reviews from './models/reviews';
+
+import productSchema from './models/mongooseSchemas/product';
+import reviewSchema from './models/mongooseSchemas/review';
+import userSchema from './models/mongooseSchemas/user';
+import citySchema from './models/mongooseSchemas/city';
 
 import creds from './config/creds';
 
@@ -116,34 +122,110 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', {
     failureRedirecrt: '/auth'
 }));
 
-router.get('/products', (req, res) => {
-    res.json(products);
-}).get('/products/:id', (req, res) => {
-    res.json(products.filter(product => parseInt(req.params.id) === product.id));
-}).get('/products/:id/reviews', (req, res) => {
-    res.json(reviews.filter(review => review.productId == parseInt(req.params.id)));
-}).post('/products', (req, res) => {
-    let data = res.parsedQuery;
-    let newProduct = {
-        id: ++productId,
-        name: data.name || "Noname",
-        brand: data.brand || "Noname",
-        price: parseFloat(data.price) || 0,
-        options: {
-            color: data.color || 'none',
-            size: data.size || 'none'
+const Product = mongoose.model("Product", productSchema);
+const Review = mongoose.model("Review", reviewSchema);
+const User = mongoose.model("User", userSchema);
+const City = mongoose.model("City", citySchema);
+router
+    .all('/*', (req, res, next) => {
+        if (req.method.match(/^(POST|PUT)$/i)) {
+            req.lastModifiedDate = new Date();
         }
-    }
-    products.push(newProduct);
-    let reader = stream.Readable();
-    let writer = fs.createWriteStream(path);
-    reader.push(JSON.stringify(products));
-    reader.push(null);
-    reader.pipe(writer);
-    res.json(newProduct);
-}).get('/users', (req, res) => {
-    res.json(users);
-})
+        next();
+    })
+    .get('/products', (req, res) => {
+        Product.find((err, data) => {
+            if (err) throw err;
+            res.json(data)
+        })
+    })
+    .get('/products/:id', (req, res) => {
+        Product.find({_id: req.params.id}, (err, data) => {
+            res.json(data);
+        });
+    })
+    .get('/products/:id/reviews', (req, res) => {
+        Review.find({productId: req.params.id}, (err, data) => {
+            if (err) throw err;
+            res.json(data);
+        });
+    })
+    .post('/products', (req, res) => {
+        let data = res.parsedQuery;
+        if (req.lastModifiedDate) {
+            data.lastModifiedDate = req.lastModifiedDate;
+        }
+        data.options = {};
+        data.options.color = data.color;
+        data.options.size = data.size;
+        Product.create(data, (err, data) => {
+            if (err) throw err;
+            res.json(data);
+        });
+    })
+    .get('/users', (req, res) => {
+        User.find((err, data) => {
+            if (err) throw err;
+            res.json(data);
+        })
+    })
+    .delete('/users/:id', (req, res) => {
+        User.remove({_id: req.params.id}, (err, data) => {
+            if (err) throw err;
+            if (data.result.n) res.send('User deleted successfully');
+        })
+    })
+    .delete('/products/:id', (req, res) => {
+        Product.remove({_id: req.params.id}, (err, data) => {
+            if (err) throw err;
+            if (data.result.n) res.send('Product deleted successfully');
+            res.end('Product was not found')
+        })
+    })
+    .get('/cities', (req, res) => {
+        City.find((err, data) => {
+            if (err) throw err;
+            res.json(data);
+        })
+    })
+    .post('/cities', (req, res) => {
+        let data = res.parsedQuery;
+        if (req.lastModifiedDate) {
+            data.lastModifiedDate = req.lastModifiedDate;
+        }
+        data.location = {};
+        data.location.lat = data.lat;
+        data.location.long = data.long;
+        City.create(data, (err, data) => {
+            if (err) throw err;
+            res.json(data);
+        })
+    })
+    .put('/cities/:id', (req, res) => {
+        let data = res.parsedQuery;
+        if (req.lastModifiedDate) {
+            data.lastModifiedDate = req.lastModifiedDate;
+        }
+        if (data.lat || data.long) data.location = {};
+        if (data.lat) data.location.lat = data.lat;
+        if (data.long) data.location.long = data.long;
+        City.findByIdAndUpdate(req.params.id, { $set: data }, { new: true }, (err, city) => {
+            if (err) throw err;
+            if (city) res.json(city);
+
+            City.create(data, (err, data) => {
+                if (err) throw err;
+                res.json(data);
+            })
+        });
+    })
+    .delete('/cities/:id', (req, res) => {
+        City.remove({_id: req.params.id}, (err, data) => {
+            if (err) throw err;
+            if (data.result.n) res.send('City deleted successfully');
+            res.end('City was not found')
+        })
+    })
 
 app.use('/api', checkToken, router);
 
