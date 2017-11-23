@@ -159,7 +159,10 @@ router
         data.options.color = data.color;
         data.options.size = data.size;
         Product.create(data, (err, data) => {
-            if (err) throw err;
+            if (err) {
+                res.end(err.message);
+                return;
+            }
             res.json(data);
         });
     })
@@ -171,14 +174,27 @@ router
     })
     .delete('/users/:id', (req, res) => {
         User.remove({_id: req.params.id}, (err, data) => {
-            if (err) throw err;
-            if (data.result.n) res.send('User deleted successfully');
+            if (err) {
+                res.end('Wrong ID');
+                return
+            }
+            if (data.result.n) {
+                res.end('User deleted successfully');
+                return
+            }
+            res.end('User was not found')
         })
     })
     .delete('/products/:id', (req, res) => {
         Product.remove({_id: req.params.id}, (err, data) => {
-            if (err) throw err;
-            if (data.result.n) res.send('Product deleted successfully');
+            if (err) {
+                res.end('Wrong ID');
+                return
+            }
+            if (data.result.n) {
+                res.end('Product deleted successfully');
+                return
+            }
             res.end('Product was not found')
         })
     })
@@ -197,7 +213,10 @@ router
         data.location.lat = data.lat;
         data.location.long = data.long;
         City.create(data, (err, data) => {
-            if (err) throw err;
+            if (err) {
+                res.end(err.message);
+                return;
+            }
             res.json(data);
         })
     })
@@ -212,17 +231,27 @@ router
         City.findByIdAndUpdate(req.params.id, { $set: data }, { new: true }, (err, city) => {
             if (err) throw err;
             if (city) res.json(city);
-
-            City.create(data, (err, data) => {
-                if (err) throw err;
-                res.json(data);
-            })
+            else {
+                City.create(data, (err, data) => {
+                    if (err) {
+                        res.end(err.message);
+                        return;
+                    }
+                    res.json(data);
+                });
+            }
         });
     })
     .delete('/cities/:id', (req, res) => {
         City.remove({_id: req.params.id}, (err, data) => {
-            if (err) throw err;
-            if (data.result.n) res.send('City deleted successfully');
+            if (err) {
+                res.end('Wrong ID');
+                return
+            }
+            if (data.result.n) {
+                res.end('City deleted successfully');
+                return
+            }
             res.end('City was not found')
         })
     })

@@ -36,9 +36,9 @@ npm run hw5
 ```
 #### 7. NoSQL/ODM (current)*
 ```
-npm run hw7
 npm run hw7-city
 npm run hw7-city -- --mongo
+npm run hw7-genData
 ```
 
 *\***current** hometask can also be executing by `npm start`*
