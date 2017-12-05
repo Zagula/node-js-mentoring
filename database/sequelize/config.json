@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "123",
+    "database": "seqdb",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "migrationStorage": "json",
+    "migrationStoragePath": "database/sequelize/sequelizeMeta.json",
+    "seederStorage": "json",
+    "seederStoragePath": "database/sequelize/sequelizeData.json"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "123",
+    "database": "seqdb",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "dialect": "postgres"
+  }
+}

@@ -10,7 +10,11 @@ import LocalStrategy from 'passport-local';
 import FacebookStrategy from 'passport-facebook';
 //import TwitterStrategy from 'passport-twitter';
 //import GoogleStrategy from 'passport-google-oauth';
-import mongoose from './modules/mongoDBService';
+import Sequelize from 'sequelize';
+import seqConfig from './database/sequelize/config';
+import seqUser from './database/sequelize/models/user';
+import seqProduct from './database/sequelize/models/product';
+import seqProductOptions from './database/sequelize/models/productoptions';
 
 import parsedCookies from './middlewares/parsedCookies';
 import parsedQuery from './middlewares/parsedQuery';
@@ -20,15 +24,17 @@ import products from './models/products';
 import users from './models/users';
 import reviews from './models/reviews';
 
-import productSchema from './models/mongooseSchemas/product';
-import reviewSchema from './models/mongooseSchemas/review';
-import userSchema from './models/mongooseSchemas/user';
-import citySchema from './models/mongooseSchemas/city';
-
 import creds from './config/creds';
 
 const app = express();
 const router = express.Router();
+
+const env = 'development';
+const sequelize = new Sequelize(seqConfig[env].database, seqConfig[env].username, seqConfig[env].password, {
+    host: seqConfig[env].host,
+    dialect: seqConfig[env].dialect,
+    logging: false
+});
 
 app.use(express.json());
 app.use(parsedCookies);
@@ -122,138 +128,49 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', {
     failureRedirecrt: '/auth'
 }));
 
-const Product = mongoose.model("Product", productSchema);
-const Review = mongoose.model("Review", reviewSchema);
-const User = mongoose.model("User", userSchema);
-const City = mongoose.model("City", citySchema);
+
+const User = seqUser(sequelize, Sequelize),
+    Product = seqProduct(sequelize, Sequelize),
+    ProductOptions = seqProductOptions(sequelize, Sequelize);
+
+Product.hasOne(ProductOptions, { foreignKey: 'productId' });
+
 router
-    .all('/*', (req, res, next) => {
-        if (req.method.match(/^(POST|PUT)$/i)) {
-            req.lastModifiedDate = new Date();
-        }
-        next();
-    })
     .get('/products', (req, res) => {
-        Product.find((err, data) => {
-            if (err) throw err;
+        Product.findAll({
+            include: ProductOptions
+        }).then((data) => {
             res.json(data)
-        })
-    })
-    .get('/products/:id', (req, res) => {
-        Product.find({_id: req.params.id}, (err, data) => {
-            res.json(data);
         });
     })
-    .get('/products/:id/reviews', (req, res) => {
-        Review.find({productId: req.params.id}, (err, data) => {
-            if (err) throw err;
-            res.json(data);
+    .get('/products/:id', (req, res) => {
+        Product.findById(req.params.id, {
+            include: ProductOptions
+        }).then((data) => {
+            res.json(data)
         });
     })
     .post('/products', (req, res) => {
-        let data = res.parsedQuery;
-        if (req.lastModifiedDate) {
-            data.lastModifiedDate = req.lastModifiedDate;
-        }
-        data.options = {};
-        data.options.color = data.color;
-        data.options.size = data.size;
-        Product.create(data, (err, data) => {
-            if (err) {
-                res.end(err.message);
-                return;
-            }
-            res.json(data);
+        let data = req.body;
+        Product.create(data, {
+            attributes: ['name', 'brand', 'price']
+        }).then(product => {
+            ProductOptions.create(Object.assign({productId: product.id}, data.options),
+            {
+                attributes: ['size', 'color', 'productId']
+            }).then(() => {
+                Product.findById(product.id, {
+                    include: ProductOptions
+                }).then((data) => {
+                    res.json(data)
+                });
+            });
         });
     })
     .get('/users', (req, res) => {
-        User.find((err, data) => {
-            if (err) throw err;
-            res.json(data);
-        })
-    })
-    .delete('/users/:id', (req, res) => {
-        User.remove({_id: req.params.id}, (err, data) => {
-            if (err) {
-                res.end('Wrong ID');
-                return
-            }
-            if (data.result.n) {
-                res.end('User deleted successfully');
-                return
-            }
-            res.end('User was not found')
-        })
-    })
-    .delete('/products/:id', (req, res) => {
-        Product.remove({_id: req.params.id}, (err, data) => {
-            if (err) {
-                res.end('Wrong ID');
-                return
-            }
-            if (data.result.n) {
-                res.end('Product deleted successfully');
-                return
-            }
-            res.end('Product was not found')
-        })
-    })
-    .get('/cities', (req, res) => {
-        City.find((err, data) => {
-            if (err) throw err;
-            res.json(data);
-        })
-    })
-    .post('/cities', (req, res) => {
-        let data = res.parsedQuery;
-        if (req.lastModifiedDate) {
-            data.lastModifiedDate = req.lastModifiedDate;
-        }
-        data.location = {};
-        data.location.lat = data.lat;
-        data.location.long = data.long;
-        City.create(data, (err, data) => {
-            if (err) {
-                res.end(err.message);
-                return;
-            }
-            res.json(data);
-        })
-    })
-    .put('/cities/:id', (req, res) => {
-        let data = res.parsedQuery;
-        if (req.lastModifiedDate) {
-            data.lastModifiedDate = req.lastModifiedDate;
-        }
-        if (data.lat || data.long) data.location = {};
-        if (data.lat) data.location.lat = data.lat;
-        if (data.long) data.location.long = data.long;
-        City.findByIdAndUpdate(req.params.id, { $set: data }, { new: true }, (err, city) => {
-            if (err) throw err;
-            if (city) res.json(city);
-            else {
-                City.create(data, (err, data) => {
-                    if (err) {
-                        res.end(err.message);
-                        return;
-                    }
-                    res.json(data);
-                });
-            }
+        Product.findAll().then((data) => {
+            res.json(data)
         });
-    })
-    .delete('/cities/:id', (req, res) => {
-        City.remove({_id: req.params.id}, (err, data) => {
-            if (err) {
-                res.end('Wrong ID');
-                return
-            }
-            if (data.result.n) {
-                res.end('City deleted successfully');
-                return
-            }
-            res.end('City was not found')
-        })
     })
 
 app.use('/api', checkToken, router);

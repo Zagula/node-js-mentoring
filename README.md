@@ -30,11 +30,16 @@ npm run hw5
 `Credentials for local authentication:`
 **login:** dude
 **password:** qwerty1234
-#### 6. SQL/ORM *NOT DONE*
+#### 6. SQL/ORM (after deadline) (current)*
 ```
-...
+npm run hw6
 ```
-#### 7. NoSQL/ODM (current)*
+1. sequelize db:create
+2. sequelize db:migrate
+3. sequelize db:seed:all
+
+`WARNING!` you need to change password in file ./database/sequelize/config.json
+#### 7. NoSQL/ODM
 ```
 npm run hw7-city
 npm run hw7-city -- --mongo
