@@ -1,6 +1,7 @@
 'use strict';
 
 import express from 'express';
+import cors from 'cors';
 import session from 'express-session';
 import stream from 'stream';
 import fs from 'fs';
@@ -33,6 +34,7 @@ const router = express.Router();
 app.use(express.json());
 app.use(parsedCookies);
 app.use(parsedQuery);
+app.use(cors());
 // app.use(session({
 //     secret: 'secret',
 //     resave: false,
@@ -188,14 +190,14 @@ router
     .delete('/products/:id', (req, res) => {
         Product.remove({_id: req.params.id}, (err, data) => {
             if (err) {
-                res.end('Wrong ID');
+                res.status(400).end('Wrong ID');
                 return
             }
             if (data.result.n) {
                 res.end('Product deleted successfully');
                 return
             }
-            res.end('Product was not found')
+            res.status(404).end('Product was not found')
         })
     })
     .get('/cities', (req, res) => {
@@ -205,13 +207,10 @@ router
         })
     })
     .post('/cities', (req, res) => {
-        let data = res.parsedQuery;
+        let data = req.body;
         if (req.lastModifiedDate) {
             data.lastModifiedDate = req.lastModifiedDate;
         }
-        data.location = {};
-        data.location.lat = data.lat;
-        data.location.long = data.long;
         City.create(data, (err, data) => {
             if (err) {
                 res.end(err.message);
@@ -221,13 +220,10 @@ router
         })
     })
     .put('/cities/:id', (req, res) => {
-        let data = res.parsedQuery;
+        let data = req.body;
         if (req.lastModifiedDate) {
             data.lastModifiedDate = req.lastModifiedDate;
         }
-        if (data.lat || data.long) data.location = {};
-        if (data.lat) data.location.lat = data.lat;
-        if (data.long) data.location.long = data.long;
         City.findByIdAndUpdate(req.params.id, { $set: data }, { new: true }, (err, city) => {
             if (err) throw err;
             if (city) res.json(city);
@@ -245,17 +241,18 @@ router
     .delete('/cities/:id', (req, res) => {
         City.remove({_id: req.params.id}, (err, data) => {
             if (err) {
-                res.end('Wrong ID');
+                res.status(400).end('Wrong ID');
                 return
             }
             if (data.result.n) {
                 res.end('City deleted successfully');
                 return
             }
-            res.end('City was not found')
+            res.status(404).end('City was not found')
         })
     })
 
-app.use('/api', checkToken, router);
+//app.use('/api', checkToken, router);
+app.use('/api', router);
 
 export default app;

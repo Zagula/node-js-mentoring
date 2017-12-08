@@ -34,11 +34,17 @@ npm run hw5
 ```
 ...
 ```
-#### 7. NoSQL/ODM (current)*
+#### 7. NoSQL/ODM
 ```
+npm run hw7
 npm run hw7-city
 npm run hw7-city -- --mongo
 npm run hw7-genData
+```
+#### 8. Swagger (current)*
+```
+(terminal 1) swagger project edit swagger-app
+(terminal 2) npm run hw8
 ```
 
 *\***current** hometask can also be executing by `npm start`*
